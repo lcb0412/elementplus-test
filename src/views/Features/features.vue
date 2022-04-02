@@ -1,0 +1,71 @@
+<template>
+    <div class="flex">
+        <el-button type="primary" :icon="Search" @click="getmsg()">获取数据</el-button>
+
+        <el-table :data="msg"  style="width: 100%" class="table_box" height="450" :row-style="{height:'300px'}">
+            <el-table-column prop="title" label="title" width="350"  />
+            <el-table-column prop="description" label="description" width="550" />
+            <el-table-column label="description" width="380" prop  >
+                <template #default="scope">
+                    <el-image
+                        :src="scope.row?.cover.detail"
+                        fit="cover"
+                        :preview-src-list="[scope.row?.cover.detail]"
+                        :hide-on-click-modal="true"
+                        class="testimg"
+                        
+                    />
+                </template>
+            </el-table-column>
+            <el-table-column prop="category" label="category" width="180" />
+            <el-table-column label="playurl" width="280" prop>
+                <template #default="scope">
+                    <video
+                        :src="scope.row?.playUrl"
+                        style="width: 250px;height: 100px;"
+                        autoplay
+                        controls
+                    ></video>
+                </template>
+            </el-table-column>
+        </el-table>
+    </div>
+</template>
+<script setup lang="ts">
+import { Delete, Edit, Search, Share, Upload } from '@element-plus/icons-vue'
+import axios from 'axios'
+import { reactive } from 'vue'
+
+let msg = reactive([])
+const getmsg = () => {
+    console.log('getmsg')
+    axios.get('https://api.apiopen.top/todayVideo').then((res) => {
+        // console.log(res.data.result)
+        res.data.result = res.data.result.filter((val, index) => index >= 5)
+        console.log(res.data.result[0].data.content.data)
+        // msg = res.data.result
+        for (let i = 0; i < res.data.result.length; i++) {
+            msg.push(res.data?.result[i]?.data.content?.data)
+        }
+        console.log(msg)
+
+    }).catch((err) => {
+        console.log(err)
+    })
+}
+
+
+</script>
+
+<style lang="less" >
+.table_box {
+    margin: 30px auto;
+}
+.el-carousel__container{
+    z-index: 1;
+}
+.testimg{
+    z-index: 9999;
+}
+
+</style>
